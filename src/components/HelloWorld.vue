@@ -3,7 +3,7 @@
     :element-loading-text="loadingText"
     element-loading-spinner="el-icon-loading"
     element-loading-background="rgba(0, 0, 0, 0.8)">
-    <img  class="logo" src="../assets/imgs/logo.png"/>
+    <img  class="logo" src="../assets/imgs/zhybk.png"/>
     <div class="prompts_content" v-show="!showContainer">
         <div class="prompts_cell">
             <div class="prompts_title cx_color_white">PPT 教案</div>
@@ -40,7 +40,6 @@
          <img class="qrcode" src="../assets/imgs/qrcode.png" />
          <span>移动端入口</span>
     </div>
-
   </div>
 </template>
 
@@ -230,10 +229,10 @@ export default {
 }
 .logo{
   position: absolute;
-  top: 20px;
-  left: 20px;
-  width: 240px;
-  height: 70px;
+  top: 10px;
+  left: 16px;
+  width: 400px;
+  // height: 70px;
 }
 
 .el-button{
@@ -332,23 +331,23 @@ export default {
     
 }
 .sign{
-  position: absolute;
-  bottom: 20px;
-  left: 0px;
+  top: 6px;
+  right: 0px;
   position: absolute;
   color: #fff;
   cursor: pointer;
   img{
     width: 160px;
     height: 40px;
+    transform: rotateY(180deg);
   }
   .ppt{
     position: absolute;
     top: 8px;
-    left: 40px;
+    left: 50px;
   }
   #pptfile{
-     position: absolute;
+    position: absolute;
     top: 0px;
     left: 0px;
     width: 100%;
@@ -358,8 +357,8 @@ export default {
 }
 .qrcodeBox{
     position: absolute;
-    left:20px;
-    top: calc(50% - 100px);
+    left:calc(50% - 100px);;
+    top: calc(60% - 0px);
     display: flex;
     justify-content: center;
     align-items: center;

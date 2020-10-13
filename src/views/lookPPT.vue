@@ -2,6 +2,10 @@
   <div class="container">
     <!-- 激光笔  -->
     <div  v-show="showLaser" class="reddot" ref="laserDrop" id="laserDrop" style="left:50%;top:50%"></div>
+    <!-- 重难点标识 -->
+    <div class="pointKey" v-show="showPoint">
+        <span :class="pointText=='重点'?'bg':''">{{pointText}}</span>
+    </div>
     <!-- PPT+canvas -->
     <div id="canvasContainer" class="ppt" ref="ppt">
       <img
@@ -63,7 +67,6 @@ export default {
         "#909399",
         "#000",
       ],
-      
       isFullscreen: false,
       draw: null,
       penWight: 4,
@@ -77,7 +80,9 @@ export default {
       laserDom: null,
       showLaser: false,
       canvasHeight:0,
-      canvasWidth:0
+      canvasWidth:0,
+      showPoint:false,
+      pointText:'重点'
     };
   },
   
@@ -92,7 +97,7 @@ export default {
       // console.log('offset',laserDom.offsetLeft )
       // console.log((this.windowW/500)*(-position.left)*2 )
         // let top = this.$refs.laserDrop.style.top;
-        let curLeft = (this.windowW/500)*(-position.left)*3.5 + left;
+        let curLeft = (this.windowW/500)*(-position.left)*5 + left;
         let curTop =(this.windowH/500)*(-position.top)*2 + top ;
         console.log(curLeft)
         console.log(curTop)
@@ -217,9 +222,12 @@ export default {
       if (data.textMessage) {
         let arr = JSON.parse(data.textMessage);
         if (arr.cmd == "changePage") {
+           this.showPoint = false
           this.changePage(arr.code, false);
         }
         if (arr.cmd == "getAcc") {
+          this.laserDom.style.left = '50%'
+          this.laserDom.style.top = '50%'
           this.laserAnimate({ left: arr.value.left, top: arr.value.top });
         }
         if (arr.cmd == "endAcc") {
@@ -248,6 +256,10 @@ export default {
         }
         if(arr.cmd == 'clearPPT'){
           this.clearPPT()
+        }
+        if(arr.cmd == 'pointShow'){
+            this.showPoint = true
+            this.pointText = arr.value ==1?'重点':'难点'
         }
       }
     },
@@ -290,117 +302,5 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-#canvasContainer {
-  user-select: none;
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-}
-#canvas {
-  width: 100%;
-}
-@mixin wh($value) {
-  width: $value;
-  height: $value;
-}
-.container {
-  @include wh(100%);
-  position: relative;
-  background-color: #000;
-  padding: 0px 120px;
-  box-sizing: border-box;
-  overflow: hidden;
-  .ppt {
-    @include wh(100%);
-    overflow: hidden;
-    position: relative;
-    img.imgppt {
-      @include wh(100%);
-    }
-    #canvas {
-      @include wh(100%);
-      position: absolute;
-      top: 0px;
-      left: 0px;
-      z-index: 99;
-    }
-  }
-  .currentPage {
-    color: #000;
-    position: absolute;
-    bottom: 20px;
-    left: 0px;
-    background: #fff;
-    padding: 10px 14px;
-    border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
-  }
-  .controlBox {
-    position: absolute;
-    z-index: 999;
-    bottom: 0px;
-    right: 60px;
-    color: #fff;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    li {
-      background: #409eff;
-      @include wh(30px);
-      padding: 7px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      transition: all 0.5s;
-
-      &.screen {
-        @include wh(35px);
-        font-size: 12px;
-      }
-      &.colorList {
-        width: 210px;
-        height: 18px;
-        padding: 10px 20px;
-        border-radius: 30px;
-        background-color: #f2f6fc;
-        div {
-          margin: 0px 5px;
-          padding: 3px;
-
-          border-radius: 50%;
-
-          width: 16px;
-          height: 16px;
-          background-color: pink;
-          // display: inline-block;
-          cursor: pointer;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          .image {
-            width: 14px;
-            height: 14px;
-          }
-        }
-      }
-    }
-  }
-}
-
-.reddot {
-  display: inline-block;
-  width: 0.8rem;
-  height: 0.8rem;
-  border: 0.5rem solid #ff3534;
-  background: #fff;
-  border-radius: 50%;
-  box-shadow: 0 0 0.1rem #ff8888;
-  border-radius: 50%;
-  position: absolute;
-  z-index: 89898;
-  // top:0px;
-  // left:0px;
-}
+@import '../assets/css/lookppt.scss';
 </style>
