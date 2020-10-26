@@ -60,7 +60,11 @@ export default {
       websocket:null,
       randomCode:'',
       show:false,
-      showContainer:true
+      showContainer:true,
+      scheduleId:'',
+      username:'',
+      url:'',
+      count:0
     }
   },
   watch:{
@@ -111,9 +115,8 @@ export default {
     goLogin(){
       let {code1,code2,code3,code4}=this
       let str = code1+code2+code3+code4
-      
-      this.websocketsend({cmd:'sendCodeToPhone',value:str})
-    
+      console.log("goLogin--------")
+      this.websocketsend({cmd:'sendCodeToPhone',value:str, t:this.$store.state.t})
     },
     lookPPT(){
       this.$router.push({path:'/lookPPT'})
@@ -148,18 +151,19 @@ export default {
       console.log(data)
       if (data.textMessage) {
         let arr = JSON.parse(data.textMessage);
-        if (arr.cmd == "sendCode") {
-          console.log(arr.value)
-          this.randomCode = arr.value
-        }
+        // if (arr.cmd == "sendCode") {
+        //   console.log(arr.value)
+        //   this.randomCode = arr.value
+        //   this.scheduleId = arr.scheduleId
+        //   this.username = arr.username
+        // }
         if(arr.cmd =='startSceen'){
-
           this.loadingText = '正在打开PPT,请稍后'
           this.loading = true
           let load = setTimeout(()=>{
             this.loading = false
             clearTimeout(load)
-            this.$router.push({path:'/lookPPT'})
+            this.$router.push({path:'/lookPPT', query: {url:arr.url,count:arr.count}})
           },2000)
         }
         if(arr.cmd == 'closeSceen'){
@@ -175,7 +179,6 @@ export default {
                 this.loading = false
                 clearTimeout(load)
                 this.showContainer=false
-                
               },2000)
           }else{
                this.show = true
@@ -183,12 +186,16 @@ export default {
               this.websocketsend({cmd:'codeError'}) 
           }
         }
-
+        if(arr.cmd == 'pptAddress') {
+          this.url = arr.url
+          this.count = arr.count
+        }
       }
     },
     //发送信息
     websocketsend(msg) {
-      let data = { message: msg, usrId: "phone", to: "phone" };
+      let data = { message: msg, scheduleId: "", username: "AllRoom" };
+      console.log(data)
       this.$globalWs.ws.send(JSON.stringify(data));
     },
   },

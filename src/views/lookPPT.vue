@@ -187,38 +187,43 @@ export default {
       this.penColor = v;
       this.draw.drawPen(5, this.penColor, this.penWight);
     },
-    getPPTList() {
-      this.$htp.get_("/our/upload/showPPT").then((res) => {
-        let { imageUrl, count } = res.data.image;
-        this.imageUrl = imageUrl;
-        this.countList = [];
-        for (let i = 1; i <= count; i++) {
+    getPPTList(url, count) {
+      this.imageUrl = "https://" + url
+      this.count = count
+      this.countList =[]
+      for (let i = 1; i <= count; i++) {
           this.countList.push(i);
-        }
-      });
-    },
-    initWebSocket() {
-      if ("WebSocket" in window) {
-        let host = this.$htp.host.replace("http", "");
-        const wsuri = "ws" + host + "/our/connectWebSocket/computer";
-        this.websocket = new WebSocket(wsuri);
-        //接收到消息的回调方法
-        this.websocket.onopen = this.websocketonopen;
-        this.websocket.onmessage = this.websocketonmessage;
-
-        this.websocket.onerror = this.websocketonerror;
-        this.websocket.onclose = this.websocketclose;
-      } else {
-        alert("当前浏览器 Not support websocket");
       }
+      // this.$htp.get_("/our/upload/showPPT").then((res) => {
+      //   let { imageUrl, count } = res.data.image;
+      //   this.imageUrl = imageUrl;
+      //   this.countList = [];
+      //   for (let i = 1; i <= count; i++) {
+      //     this.countList.push(i);
+      //   }
+      // });
     },
-    websocketonopen() {
-      console.log("连接成功");
-    },
+    // initWebSocket() {
+    //   if ("WebSocket" in window) {
+    //     let host = this.$htp.host.replace("http", "");
+    //     const wsuri = "ws" + host + "/our/connectWebSocket/computer";
+    //     this.websocket = new WebSocket(wsuri);
+    //     //接收到消息的回调方法
+    //     this.websocket.onopen = this.websocketonopen;
+    //     this.websocket.onmessage = this.websocketonmessage;
+
+    //     this.websocket.onerror = this.websocketonerror;
+    //     this.websocket.onclose = this.websocketclose;
+    //   } else {
+    //     alert("当前浏览器 Not support websocket");
+    //   }
+    // },
+    // websocketonopen() {
+    //   console.log("连接成功");
+    // },
     //接收信息
     websocketonmessage(e) {
       let data = JSON.parse(e.data);
-
       if (data.textMessage) {
         let arr = JSON.parse(data.textMessage);
         if (arr.cmd == "changePage") {
@@ -261,6 +266,10 @@ export default {
             this.showPoint = true
             this.pointText = arr.value ==1?'重点':'难点'
         }
+        console.log(arr.cmd)
+        if(arr.cmd == 'checkIn') {
+          this.$router.push({ path: '/checkIn'})
+        }
       }
     },
     //发送信息
@@ -293,7 +302,7 @@ export default {
     // console.log(this.windowW )
     // console.log(this.windowH )
     // this.laserAnimate({left: "-1.10", top: "0"})
-    this.getPPTList();
+    this.getPPTList(this.$route.query.url, this.$route.query.count);
     this.initDraw();
     this.canvasHeight = this.$refs.canvas.clientHeight
     this.canvasWidth = this.$refs.canvas.clientWidth

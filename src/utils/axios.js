@@ -3,8 +3,8 @@ import axios from 'axios'
 
 import { MessageBox } from 'element-ui';
 
-const host = "http://39.105.98.245:8002" 
-// const host = "http://192.168.2.102:8002" 
+// const host = "http://39.105.98.245:8002" 
+const host = "http://192.168.6.129:8888" 
 const base_url = host
 
 // const base_url = process.env.ADMIN_SERVER

@@ -26,6 +26,10 @@ export default new Router({
       name: 'canvas',
       component: ()=>import('@/components/canvas')
     },
-    
+    {
+      path: '/checkIn',
+      name: 'checkIn',
+      component: ()=>import('@/views/checkIn')
+    }
   ]
 })

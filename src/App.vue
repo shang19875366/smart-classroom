@@ -17,7 +17,9 @@ export default {
     localSocket(){
          if("WebSocket" in window){
             let host = this.$htp.host.replace("http", "");
-            const wsuri = "ws" + host + "/our/connectWebSocket/computer";
+            let t = new Date().getTime();
+            this.$store.commit("updatet",t);
+            const wsuri = "ws" + host + "/mhys/connectWebSocket/computer,computer"+t;
             this.ws = new WebSocket(wsuri);
             this.$globalWs.setWs(this.ws)
             this.ws.onopen = this.onopen()
