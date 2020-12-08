@@ -268,7 +268,8 @@ export default {
         }
         console.log(arr.cmd)
         if(arr.cmd == 'checkIn') {
-          this.$router.push({ path: '/checkIn'})
+          console.log(arr.classname)
+          this.$router.push({ path: '/checkIn',query:{classname:arr.classname}})
         }
       }
     },

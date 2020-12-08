@@ -23,11 +23,15 @@ Vue.config.productionTip = false
 
 const store = new Vuex.Store({
   state:{
-    t:0
+    t:0,
+    flag:0
   },
   mutations:{
     updatet(state, t) {
       state.t = t
+    },
+    updateFlag(state,flag) {
+      state.flag = flag
     }
   }
 })

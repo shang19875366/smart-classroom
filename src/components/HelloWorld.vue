@@ -29,14 +29,13 @@
        <div class="codes_error" v-show="show">
           投屏码无效
        </div>
-       
     </div>
-    <div class="sign"  v-show="showContainer">
+    <div class="sign"  v-show="false">
       <img  src="../assets/imgs/sign.png"/>
       <span class="ppt">上传PPT</span>
        <input id="pptfile" type="file" @change="getUploadFile" class="upload" accept=".ppt,.pptx"/>
     </div>
-    <div class="qrcodeBox" v-show="showContainer">
+    <div class="qrcodeBox" v-show="false">
          <img class="qrcode" src="../assets/imgs/qrcode.png" />
          <span>移动端入口</span>
     </div>
