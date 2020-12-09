@@ -173,6 +173,8 @@ export default {
           if(arr.value == true){
               this.loadingText = '正在投屏，请稍后'
               this.loading = true
+              this.$store.commit("updateScheduleId",arr.scheduleId)
+              this.$store.commit("updateUsername",arr.username)
               let load = setTimeout(()=>{
                 this.websocketsend({cmd:'codeSucc'})
                 this.loading = false

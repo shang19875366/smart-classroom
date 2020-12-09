@@ -24,7 +24,9 @@ Vue.config.productionTip = false
 const store = new Vuex.Store({
   state:{
     t:0,
-    flag:0
+    flag:0,
+    scheduleId:0,
+    username:''
   },
   mutations:{
     updatet(state, t) {
@@ -32,6 +34,12 @@ const store = new Vuex.Store({
     },
     updateFlag(state,flag) {
       state.flag = flag
+    },
+    updateScheduleId(state, scheduleId) {
+      state.scheduleId = scheduleId
+    },
+    updateUsername(state,username) {
+      state.username = username
     }
   }
 })

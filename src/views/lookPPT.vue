@@ -275,7 +275,7 @@ export default {
     },
     //发送信息
     websocketsend(msg) {
-      let data = { message: msg, usrId: "phone", to: "phone" };
+      let data = { message: msg, scheduleId: this.$store.state.scheduleId, username: this.$store.state.username };
       this.$globalWs.ws.send(JSON.stringify(data));
     },
     websocketonerror() {

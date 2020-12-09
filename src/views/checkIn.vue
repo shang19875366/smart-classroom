@@ -33,7 +33,6 @@
         if(arr.cmd == 'closeCheckIn') {
           this.$router.go(-1);
         } else if(arr.cmd == 'refresh_checked_list') {
-          console.log('----------------------',this.listData)
           let stuName = arr.stuName
           this.listData.push({
             title:stuName
