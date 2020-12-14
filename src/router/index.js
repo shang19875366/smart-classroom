@@ -30,6 +30,11 @@ export default new Router({
       path: '/checkIn',
       name: 'checkIn',
       component: ()=>import('@/views/checkIn')
+    },
+    {
+      path: '/vote',
+      name: 'vote',
+      component: () => import('@/views/vote')
     }
   ]
 })

@@ -271,6 +271,10 @@ export default {
           console.log(arr.classname)
           this.$router.push({ path: '/checkIn',query:{classname:arr.classname}})
         }
+        if(arr.cmd == 'vote') {
+          console.log(arr.classname,arr.activityLogId)
+          this.$router.push({ path: '/vote',query:{classname:arr.classname,activityLogId:arr.activityLogId}})
+        }
       }
     },
     //发送信息

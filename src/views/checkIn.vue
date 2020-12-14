@@ -32,24 +32,29 @@
         let arr = JSON.parse(data.textMessage);
         if(arr.cmd == 'closeCheckIn') {
           this.$router.go(-1);
-        } else if(arr.cmd == 'refresh_checked_list') {
+          this.listData =[]
+          this.$store.commit("updateFlag", 0);
+        } else if(arr.cmd == 'refresh_check_list') {
+          if(this.$store.state.flag == 0) {
           let stuName = arr.stuName
           this.listData.push({
             title:stuName
           })
+          this.$store.commit("updateFlag", 1);
+          }
         }
       }
     }
     },
     created() {
-      this.$globalWs.ws.onmessage = (res) =>{
-        console.log(this.$store.flag)
-        if(this.$store.state.flag == 0) {
+      console.log(this.$store.state.flag)
+      // if(this.$store.state.flag == 0) {
+        this.$globalWs.ws.onmessage = (res) =>{
           this.websocketonmessage(res)
-          this.$store.commit("updateFlag", 1);
-          console.log(this.$store.state.flag)
+          // this.$store.commit("updateFlag", 1);
+          // console.log(this.$store.state.flag)
         }
-      }
+      // }
     },
     mounted() {
       this.classname = this.$route.query.classname
