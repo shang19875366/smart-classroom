@@ -182,6 +182,7 @@ export default {
     //清除PPT
     clearPPT() {
       this.draw.clearCanvas();
+      this.websocketsend({ cmd: "clearppt"});
     },
     changeColor(v) {
       this.penColor = v;
