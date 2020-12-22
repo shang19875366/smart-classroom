@@ -218,7 +218,10 @@ export default {
 .container{
   width: 100%;
   height: 100%;
-  background-color: #1B1A39;
+  // background-color: #1B1A39;
+  background-image: url(../assets/imgs/bg.png);
+		background-size: 100% 100%;
+		background-repeat: no-repeat;
   display: flex;
   justify-content: center;
   align-items: center;
