@@ -75,9 +75,8 @@ export default {
   },
   methods: {
     format(percentage) {
-      return `${parseInt(
-        (percentage / 100) * (this.unchecked + this.checked)
-      )}人`;
+      console.log(percentage)
+      return `${Math.round(percentage * (this.unchecked + this.checked)/100)}人`;
     },
     getCheckedData(activityLogId) {
       this.loading = true;
@@ -87,11 +86,8 @@ export default {
           if (res.data.code == 200) {
             this.checked = res.data.activityInfoId.activityStus.length;
             this.unchecked = res.data.activityInfoId.unActivityStus.length;
-            this.percentChecked =
-              Math.floor(this.checked / (this.checked + this.unchecked)) * 100;
-            this.percentUnChecked =
-              Math.floor(this.unchecked / (this.checked + this.unchecked)) *
-              100;
+            this.percentChecked =Math.round((this.checked / (this.checked + this.unchecked)) * 100);
+            this.percentUnChecked = Math.round((this.unchecked / (this.checked + this.unchecked)) * 100);
             this.listData = [];
             res.data.activityInfoId.unActivityStus.forEach((element) => {
               this.listData.push(element);
@@ -111,7 +107,7 @@ export default {
       let option = {
         tooltip: {
           trigger: "item",
-          formatter: "{b} : {c} ({d}%)",
+          formatter: "{b} : {c}人 ({d}%)",
         },
         color:['#007AFF','#FA5033'],
         series: [
