@@ -1,17 +1,20 @@
 
 import axios from 'axios'
+import store from '../store/store'
 
 import { MessageBox } from 'element-ui';
 
-// const host = "http://192.168.9.126:9002" 
+// const host = "http://192.168.9.126:9002"
 const host = "http://192.168.6.129:8888"
 const base_url = host
 
 // const base_url = process.env.ADMIN_SERVER
 
 let myHead = () => {
+    console.log(store.state.token)
     return axios.create({
-        baseURL: base_url
+        baseURL: base_url,
+        headers: { "token": store.state.token}
     });
 }
 // axios.defaults.withCredentials=true
@@ -46,7 +49,6 @@ export default {
       myHead().post(url,qs.stringify(body),headers).then(res => {
         resolve(res.data)
       },res =>{
-
          reject(res)
       })
     })

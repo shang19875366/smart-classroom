@@ -114,7 +114,7 @@ export default {
     goLogin(){
       let {code1,code2,code3,code4}=this
       let str = code1+code2+code3+code4
-      console.log("goLogin--------")
+      console.log("goLogin--------",str)
       this.websocketsend({cmd:'sendCodeToPhone',value:str, t:this.$store.state.t})
     },
     lookPPT(){
@@ -175,6 +175,7 @@ export default {
               this.loading = true
               this.$store.commit("updateScheduleId",arr.scheduleId)
               this.$store.commit("updateUsername",arr.username)
+              this.$store.commit("updateToken",arr.token)
               let load = setTimeout(()=>{
                 this.websocketsend({cmd:'codeSucc'})
                 this.loading = false
@@ -182,7 +183,7 @@ export default {
                 this.showContainer=false
               },2000)
           }else{
-               this.show = true
+              this.show = true
               this.clearCode()
               this.websocketsend({cmd:'codeError'}) 
           }

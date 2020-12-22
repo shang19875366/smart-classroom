@@ -270,7 +270,7 @@ export default {
         console.log(arr.cmd)
         if(arr.cmd == 'checkIn') {
           console.log(arr.classname)
-          this.$router.push({ path: '/checkIn',query:{classname:arr.classname}})
+          this.$router.push({ path: '/checkIn',query:{classname:arr.classname,activityLogId:arr.activityLogId}})
         }
         if(arr.cmd == 'vote') {
           console.log(arr.classname,arr.activityLogId)

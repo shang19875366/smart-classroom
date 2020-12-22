@@ -35,6 +35,11 @@ export default new Router({
       path: '/vote',
       name: 'vote',
       component: () => import('@/views/vote')
+    },
+    {
+      path: '/checkInResult',
+      name: 'checkInResult',
+      component: () => import('@/views/checkInResult')
     }
   ]
 })
