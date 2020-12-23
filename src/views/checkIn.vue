@@ -60,14 +60,14 @@
             this.listData =[]
             this.$store.commit("updateFlag", 0);
           } else if(arr.cmd == 'refresh_check_list') {
-            if(this.$store.state.flag == 0) {
+            // if(this.$store.state.flag == 0) {
             // let stuName = arr.stuName
             // this.listData.push({
             //   title:stuName
             // })
             this.getCheckList(this.activityLogId)
-            this.$store.commit("updateFlag", 1);
-            }
+            // this.$store.commit("updateFlag", 1);
+            // }
           } else if(arr.cmd == 'endCheckIn') {
             this.$router.push({ path: '/checkInResult',query:{classname:this.classname,activityLogId:this.activityLogId }})
           }
