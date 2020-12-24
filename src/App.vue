@@ -8,7 +8,8 @@
 export default {
   name: 'App',
   created(){
-    this.localSocket()
+    // this.localSocket()
+    this.$store.commit("createWebSocket")
   },
   methods:{
     onopen(){

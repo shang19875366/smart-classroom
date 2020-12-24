@@ -43,7 +43,6 @@
 </template>
 
 <script>
-
 export default {
   name: "HelloWorld",
   data() {
@@ -99,7 +98,6 @@ export default {
           })
         }
     },
-
   },
   methods:{
     clearCode(){
@@ -114,7 +112,6 @@ export default {
     goLogin(){
       let {code1,code2,code3,code4}=this
       let str = code1+code2+code3+code4
-      console.log("goLogin--------",str)
       this.websocketsend({cmd:'sendCodeToPhone',value:str, t:this.$store.state.t})
     },
     lookPPT(){
@@ -123,7 +120,6 @@ export default {
     getUploadFile(){
       let formData = new window.FormData()
       let pptfile = document.querySelector("input[id='pptfile']").files[0]
-      
       formData.append('file', pptfile)
       this.loading = true
       this.$htp.post_('/our/upload/UploadTransPPT',formData,true).then(res=>{
@@ -144,73 +140,128 @@ export default {
       })
     },
     //接收信息
-    websocketonmessage(e) {
-      console.log(111)
-      let data = JSON.parse(e.data);
-      console.log(data)
-      if (data.textMessage) {
-        let arr = JSON.parse(data.textMessage);
+    // websocketonmessage(e) {
+      // let data = JSON.parse(e.data);
+      // console.log(data)
+      // if (data.textMessage) {
+        // let arr = JSON.parse(data.textMessage);
         // if (arr.cmd == "sendCode") {
         //   console.log(arr.value)
         //   this.randomCode = arr.value
         //   this.scheduleId = arr.scheduleId
         //   this.username = arr.username
         // }
-        if(arr.cmd =='startSceen'){
-          this.loadingText = '正在打开PPT,请稍后'
-          this.loading = true
-          let load = setTimeout(()=>{
-            this.loading = false
-            clearTimeout(load)
-            this.$router.push({path:'/lookPPT', query: {url:arr.url,count:arr.count}})
-          },2000)
-        }
-        if(arr.cmd == 'closeSceen'){
-          this.showContainer=true
-          this.clearCode()
-        }
-        if(arr.cmd == 'vertifyCode'){
-          if(arr.value == true){
-              this.loadingText = '正在投屏，请稍后'
-              this.loading = true
-              this.$store.commit("updateScheduleId",arr.scheduleId)
-              this.$store.commit("updateUsername",arr.username)
-              this.$store.commit("updateToken",arr.token)
-              let load = setTimeout(()=>{
-                this.websocketsend({cmd:'codeSucc'})
-                this.loading = false
-                clearTimeout(load)
-                this.showContainer=false
-              },2000)
-          }else{
-              this.show = true
-              this.clearCode()
-              this.websocketsend({cmd:'codeError'}) 
-          }
-        }
-        if(arr.cmd == 'pptAddress') {
-          this.url = arr.url
-          this.count = arr.count
-        }
-      }
-    },
+        // if(arr.cmd =='startSceen'){
+        //   this.loadingText = '正在打开PPT,请稍后'
+        //   this.loading = true
+        //   let load = setTimeout(()=>{
+        //     this.loading = false
+        //     clearTimeout(load)
+        //     this.$router.push({path:'/lookPPT', query: {url:arr.url,count:arr.count}})
+        //   },2000)
+        // }
+        // if(arr.cmd == 'closeSceen'){
+        //   this.showContainer=true
+        //   this.clearCode()
+        // }
+        // if(arr.cmd == 'vertifyCode'){
+        //   console.log(arr.cmd,arr.value)
+        //   if(arr.value == true){
+        //       this.loadingText = '正在投屏，请稍后'
+        //       this.loading = true
+        //       this.$store.commit("updateScheduleId",arr.scheduleId)
+        //       this.$store.commit("updateUsername",arr.username)
+        //       this.$store.commit("updateToken",arr.token)
+        //       let load = setTimeout(()=>{
+        //         this.websocketsend({cmd:'codeSucc'})
+        //         this.loading = false
+        //         clearTimeout(load)
+        //         this.showContainer=false
+        //       },2000)
+        //   } else {
+        //       this.show = true
+        //       this.clearCode()
+        //       this.websocketsend({cmd:'codeError'}) 
+        //   }
+        // }
+        // if(arr.cmd == 'pptAddress') {
+        //   this.url = arr.url
+        //   this.count = arr.count
+        // }
+      // }
+    // },
     //发送信息
     websocketsend(msg) {
       let data = { message: msg, scheduleId: "", username: "AllRoom" };
       console.log(data)
-      this.$globalWs.ws.send(JSON.stringify(data));
+      this.$store.commit("sendMsg",data)
+      // this.$globalWs.ws.send(JSON.stringify(data));
     },
+    vertifyCode(arr) {
+      if(arr.value == true){
+          this.loadingText = '正在投屏，请稍后'
+          this.loading = true
+          this.$store.commit("updateScheduleId",arr.scheduleId)
+          this.$store.commit("updateUsername",arr.username)
+          this.$store.commit("updateToken",arr.token)
+          let load = setTimeout(()=>{
+            this.websocketsend({cmd:'codeSucc'})
+            this.loading = false
+            clearTimeout(load)
+            this.showContainer=false
+          },2000)
+      } else {
+          this.show = true
+          this.clearCode()
+          this.websocketsend({cmd:'codeError'}) 
+      }
+    },
+    startSceen(arr) {
+      this.loadingText = '正在打开PPT,请稍后'
+      this.loading = true
+      let load = setTimeout(()=>{
+        this.loading = false
+        clearTimeout(load)
+        this.$router.push({path:'/lookPPT', query: {url:arr.url,count:arr.count}})
+      },2000)
+    },
+    closeSceen(arr) {
+      this.showContainer=true
+      this.clearCode()
+    },
+    pptAddress(arr) {
+      this.url = arr.url
+      this.count = arr.count
+    }
   },
   created(){
-    this.$globalWs.ws.onmessage = (res) =>{
-      this.websocketonmessage(res)
-    }
+    // this.$globalWs.ws.onmessage = (res) =>{
+    //   this.websocketonmessage(res)
+    // }
+    PubSub.subscribe("vertifyCode",(msg,arr)=> {
+      this.vertifyCode(arr)
+    })
+    PubSub.subscribe("startSceen",(msg,arr)=> {
+      this.startSceen(arr)
+    })
+    PubSub.subscribe("closeSceen",(msg,arr)=> {
+      this.closeSceen(arr)
+    })
+    PubSub.subscribe("pptAddress",(msg,arr)=> {
+      this.pptAddress(arr)
+    })
   },
   mounted() {
     this.$nextTick(()=>{
       this.$refs.code1.focus()
     })
   },
+  beforeDestroy() {
+    PubSub.unsubscribe("vertifyCode")
+    PubSub.unsubscribe("startSceen")
+    PubSub.unsubscribe("closeSceen")
+    PubSub.unsubscribe("pptAddress")
+  }
 };
 </script>
 <style lang="scss" scoped>

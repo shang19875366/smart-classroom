@@ -7,8 +7,9 @@ import App from './App'
 import router from './router'
 import './assets/css/index.css'
 import store from './store/store'
-
+import PubSub from 'pubsub-js'
 Vue.use(Element, { size: 'small', zIndex: 3000 });
+Vue.use(PubSub)
 import globalWs from '@/utils/websocket.js'
 Vue.prototype.$globalWs = globalWs
 

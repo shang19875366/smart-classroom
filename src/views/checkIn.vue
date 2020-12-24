@@ -58,7 +58,7 @@
           if(arr.cmd == 'closeCheckIn') {
             this.$router.go(-1);
             this.listData =[]
-            this.$store.commit("updateFlag", 0);
+            // this.$store.commit("updateFlag", 0);
           } else if(arr.cmd == 'refresh_check_list') {
             // if(this.$store.state.flag == 0) {
             // let stuName = arr.stuName
@@ -154,20 +154,34 @@
       websocketsend(msg) {
         let data = { message: msg, scheduleId: this.$store.state.scheduleId, username: this.$store.state.username };
         console.log(data)
-        this.$globalWs.ws.send(JSON.stringify(data));
+        this.$store.commit("sendMsg",data)
+        // this.$globalWs.ws.send(JSON.stringify(data));
       },
     },
     created() {
-      console.log(this.$store.state.flag)
+      // console.log(this.$store.state.flag)
       // if(this.$store.state.flag == 0) {
-        this.$globalWs.ws.onmessage = (res) =>{
-          this.websocketonmessage(res)
+        // this.$globalWs.ws.onmessage = (res) =>{
+          // this.websocketonmessage(res)
           // this.$store.commit("updateFlag", 1);
           // console.log(this.$store.state.flag)
-        }
+        // }
       // }
+      PubSub.subscribe("closeCheckIn",(msg,arr)=> {
+        this.$router.go(-1);
+        this.listData =[]
+      })
+      PubSub.subscribe("refresh_check_list",(msg,arr)=> {
+        this.getCheckList(this.activityLogId)
+      })
+      PubSub.subscribe("endCheckIn",(msg,arr)=> {
+        this.$router.push({ path: '/checkInResult',query:{classname:this.classname,activityLogId:this.activityLogId }})
+      })
     },
     beforeDestroy() {
+      PubSub.unsubscribe("closeCheckIn")
+      PubSub.unsubscribe("refresh_check_list")
+      PubSub.unsubscribe("endCheckIn")
       if(this.timeInterval != null) {
           clearInterval(this.timeInterval)
       }

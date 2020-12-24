@@ -6,47 +6,26 @@
     element-loading-spinner="el-icon-loading"
     element-loading-background="rgba(0, 0, 0, 0.8)"
   >
-    <div class="tittle">
-      <img class="logo" src="../assets/imgs/zhybk.png" />
+    <div class="top">
+      <div class="title">投票</div>
     </div>
-    <div class="title">
-      <span class="classname">{{ classname }}</span>投票正在进行中……
-    </div>
-    <div class="check_in_area">
-      <div class="top">
-          <div class="left">
-            <h2>已投 ({{ activityStus.length }})</h2>
-            <div class="students">
-                <div v-for="(item, index) in activityStus" :key="index">
-                    <div class="icon-container">
-                        <span class="icon-text">{{ item.stuName }}</span>
-                    </div>
-                </div>
-            </div>
-          </div>
-          <div class="center">
-            <h2>未投({{ unActivityStus.length }})</h2>
-            <div class="students">
-                <div v-for="(item, index) in unActivityStus" :key="index">
-                    <div class="icon-container">
-                        <span class="icon-text">{{ item.stuName }}</span>
-                    </div>
-                </div>
-            </div>
-          </div>
-      </div>
-      <div class="bottom">
-          <div class="left" v-for="(item,index) in dataMap" :key="index">
-              <h2>{{item.name}}({{ item.data.length }})</h2>
-              <div class="students">
-                <div v-for="(item1, index1) in item.data" :key="index1">
-                    <div class="icon-container">
-                        <span class="icon-text">{{ item1.stuName }}</span>
-                    </div>
-                </div>
-            </div>
-          </div>
-      </div>
+    <div class="content">
+       <div class="check-in-detail">
+         <div class="vote-title">{{voteName}}</div>
+         <div class="option-container" v-for="(item, index) in listData" :key="index">
+           <div class="option-title">
+             {{item.title}}
+           </div>
+           <div class="option-progress">
+             <el-progress
+                :percentage="percentChecked"
+                :stroke-width="30"
+                color="#1B8CFF;"
+              ></el-progress>
+           </div>
+         </div>
+       </div>
+       <div class="uncheck-in-students"></div>
     </div>
   </div>
 </template>
@@ -55,13 +34,14 @@
 export default {
   data() {
     return {
-    //   listData: [],
+      //   listData: [],
       classname: "",
       loadingText: "正在加载中...请稍后",
       loading: false,
-      dataMap:[],
-      activityStus:[],
-      unActivityStus:[]
+      dataMap: [],
+      activityStus: [],
+      unActivityStus: [],
+      voteName: "我是一个投票的主题",
     };
   },
   methods: {
@@ -74,17 +54,17 @@ export default {
         let arr = JSON.parse(data.textMessage);
         if (arr.cmd == "closeVote") {
           this.$router.go(-1);
-        //   this.listData = [];
-          this.$store.commit("updateFlag", 0);
+          //   this.listData = [];
+          // this.$store.commit("updateFlag", 0);
         } else if (arr.cmd == "refresh_vote_list") {
-        //   if (this.$store.state.flag == 0) {
-            // let stuName = arr.stuName;
-            // this.listData.push({
-            //   title: stuName,
-            // });
-            // this.$store.commit("updateFlag", 1);
-            this.getVoteData()
-        //   }
+          //   if (this.$store.state.flag == 0) {
+          // let stuName = arr.stuName;
+          // this.listData.push({
+          //   title: stuName,
+          // });
+          // this.$store.commit("updateFlag", 1);
+          this.getVoteData();
+          //   }
         }
       }
     },
@@ -92,33 +72,44 @@ export default {
     getVoteData() {
       this.loading = true;
       this.$htp
-        .get_("/mhys/dataManage/activityStu/list?activityLogId="+this.$route.query.activityLogId)
-        .then(({data}) => {
-            console.log(data)
+        .get_(
+          "/mhys/activitylog/isJoinList?activityLogId=" +
+            this.$route.query.activityLogId
+        )
+        .then(({ data }) => {
+          console.log(data);
           if (data.code == 200) {
-              this.dataMap = data.page.dataMap;
-              this.activityStus = data.page.activityStus
-              this.unActivityStus = data.page.unActivityStus
+
           } else {
-            this.$message.error("获取投票数据失败，请重试");
+            this.$message.error("获取数据出错,请检查网络连接");
           }
           this.loading = false;
         })
         .catch((res) => {
-          this.$message.error("获取投票数据失败，请重试");
+          this.$message.error("获取数据出错,请检查网络连接");
           this.loading = false;
         });
     },
   },
   created() {
-    console.log(this.$store.state.flag);
+    // console.log(this.$store.state.flag);
     // if(this.$store.state.flag == 0) {
-    this.$globalWs.ws.onmessage = (res) => {
-      this.websocketonmessage(res);
+    // this.$globalWs.ws.onmessage = (res) => {
+      // this.websocketonmessage(res);
       // this.$store.commit("updateFlag", 1);
       // console.log(this.$store.state.flag)
-    };
+    // };
     // }
+    PubSub.subscribe("closeVote",(msg,arr)=> {
+      this.$router.go(-1);
+    })
+    PubSub.subscribe("refresh_vote_list",(msg,arr)=> {
+      this.getVoteData();
+    })
+  },
+  beforeDestroy() {
+    PubSub.unsubscribe("closeVote")
+    PubSub.unsubscribe("refresh_vote_list")
   },
   mounted() {
     this.classname = this.$route.query.classname;
@@ -130,76 +121,56 @@ export default {
 
 <style scoped lang="scss">
 .container {
-  width: 100%;
+  width: 1920px;
   height: 100%;
-  padding: 1%;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
-  background-color: #1b1a39;
   color: #fff;
 }
-.title {
-  width: 100%;
-  height: 10%;
-  text-align: center;
-  font-size: 36px;
-  margin-top: 2%;
-  font-weight: bold;
-}
-.classname {
-  font-size: 36px;
-}
-.logo {
-  position: absolute;
-  top: 10px;
-  left: 16px;
-  width: 400px;
-  // height: 70px;
-}
-.check_in_area {
-  width: 100%;
-  flex-grow: 1;
+.top {
+  height: 80px;
+  background: #252525;
   display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  justify-content: space-between;
+  align-items: center;
+  padding-left: 30px;
+}
+.content {
+  flex: 1;
+  display: flex;
+}
+.title {
+  height: 50px;
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 50px;
+  color: #ffffff;
+  display: flex;
   align-items: center;
 }
-.icon-container {
-  width: 128px;
-  height: 128px;
-  background-color: #844797;
-  border-radius: 50%;
-  margin-right: 40px;
-  margin-bottom: 40px;
+.check-in-detail {
+  width: 1188px;
+  background: #2e3133;
+  height: 100%;
 }
-.icon-text {
-  width: 128px;
-  height: 128px;
-  color: white;
-  display: block;
-  text-align: center;
-  line-height: 128px;
+.uncheck-in-students {
+  width: 732px;
+  background: #3c4043;
+  height: 100%;
+}
+.vote-title {
+  height: 50px;
   font-size: 36px;
+  font-weight: 400;
+  line-height: 52px;
+  color: #FFFFFF;
+  margin-left: 30px;
+  margin-top: 21px;
 }
-.top,.bottom {
-    flex: 1;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    text-align: center;
-    // border: dashed #fff 1px;
-}
-.left,.right,.center {
-    flex:1;
-    // border: dashed #fff 1px;
-}
-.students {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
+.option-container {
+  height: 160px;
+  padding-left: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 </style>

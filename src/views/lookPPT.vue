@@ -74,7 +74,7 @@ export default {
       imageUrl: "",
       countList: [],
       choseOne: 1,
-      websocket: null,
+      // websocket: null,
       windowH: null,
       windowW: null,
       laserDom: null,
@@ -182,7 +182,10 @@ export default {
     //清除PPT
     clearPPT() {
       this.draw.clearCanvas();
-      this.websocketsend({ cmd: "clearppt"});
+      this.websocketsend({ cmd: "clearpptPhone"});
+    },
+    clearPPTScreen() {
+      this.draw.clearCanvas();
     },
     changeColor(v) {
       this.penColor = v;
@@ -223,83 +226,140 @@ export default {
     //   console.log("连接成功");
     // },
     //接收信息
-    websocketonmessage(e) {
-      let data = JSON.parse(e.data);
-      if (data.textMessage) {
-        let arr = JSON.parse(data.textMessage);
-        if (arr.cmd == "changePage") {
-           this.showPoint = false
-          this.changePage(arr.code, false);
-        }
-        if (arr.cmd == "getAcc") {
-          this.laserDom.style.left = '50%'
-          this.laserDom.style.top = '50%'
-          this.laserAnimate({ left: arr.value.left, top: arr.value.top });
-        }
-        if (arr.cmd == "endAcc") {
-          this.showLaser = false;
-        }
-        if (arr.cmd == "movestart") {
-          this.showLaser = true;
-        }
-        if (arr.cmd == "closeSceen") {
-          this.$router.push({ path: "/" });
-        }
-        if(arr.cmd == 'boradToScreen'){
-          console.log(arr.context)
-          let drawData = arr.context
-            if(drawData.data.graphtype != 9 && drawData.data.graphtype != 10){
-               console.log(drawData.data)
-              this.draw.dodraw(drawData);
-              if(drawData.data.color){
-                this.penColor = drawData.data.color;
-              }
-                if(drawData.data.weight){
-                  this.penWight = drawData.data.weight;
-              }
+    // websocketonmessage(e) {
+    //   let data = JSON.parse(e.data);
+    //   if (data.textMessage) {
+    //     let arr = JSON.parse(data.textMessage);
+    //     if (arr.cmd == "changePage") {
+    //        this.showPoint = false
+    //       this.changePage(arr.code, false);
+    //     }
+    //     if (arr.cmd == "getAcc") {
+    //       this.laserDom.style.left = '50%'
+    //       this.laserDom.style.top = '50%'
+    //       this.laserAnimate({ left: arr.value.left, top: arr.value.top });
+    //     }
+    //     if (arr.cmd == "endAcc") {
+    //       this.showLaser = false;
+    //     }
+    //     if (arr.cmd == "movestart") {
+    //       this.showLaser = true;
+    //     }
+    //     if (arr.cmd == "closeSceen") {
+    //       this.$router.push({ path: "/" });
+    //     }
+    //     if(arr.cmd == 'boradToScreen'){
+    //       console.log(arr.context)
+    //       let drawData = arr.context
+    //         if(drawData.data.graphtype != 9 && drawData.data.graphtype != 10){
+    //            console.log(drawData.data)
+    //           this.draw.dodraw(drawData);
+    //           if(drawData.data.color){
+    //             this.penColor = drawData.data.color;
+    //           }
+    //             if(drawData.data.weight){
+    //               this.penWight = drawData.data.weight;
+    //           }
 
-            }
-        }
-        if(arr.cmd == 'clearPPT'){
-          this.clearPPT()
-        }
-        if(arr.cmd == 'pointShow'){
-            this.showPoint = true
-            this.pointText = arr.value ==1?'重点':'难点'
-        }
-        console.log(arr.cmd)
-        if(arr.cmd == 'checkIn') {
-          console.log(arr.classname)
-          this.$router.push({ path: '/checkIn',query:{classname:arr.classname,activityLogId:arr.activityLogId}})
-        }
-        if(arr.cmd == 'vote') {
-          console.log(arr.classname,arr.activityLogId)
-          this.$router.push({ path: '/vote',query:{classname:arr.classname,activityLogId:arr.activityLogId}})
-        }
-      }
-    },
+    //         }
+    //     }
+    //     if(arr.cmd == 'clearPPT'){
+    //       this.clearPPTScreen()
+    //     }
+    //     if(arr.cmd == 'pointShow'){
+    //         this.showPoint = true
+    //         this.pointText = arr.value ==1?'重点':'难点'
+    //     }
+    //     if(arr.cmd == 'checkIn') {
+    //       console.log(arr.classname)
+    //       this.$router.push({ path: '/checkIn',query:{classname:arr.classname,activityLogId:arr.activityLogId}})
+    //     }
+    //     if(arr.cmd == 'vote') {
+    //       console.log(arr.classname,arr.activityLogId)
+    //       this.$router.push({ path: '/vote',query:{classname:arr.classname,activityLogId:arr.activityLogId}})
+    //     }
+    //   }
+    // },
     //发送信息
     websocketsend(msg) {
       let data = { message: msg, scheduleId: this.$store.state.scheduleId, username: this.$store.state.username };
-      this.$globalWs.ws.send(JSON.stringify(data));
+      this.$store.commit("sendMsg",data)
+      // this.$globalWs.ws.send(JSON.stringify(data));
     },
-    websocketonerror() {
-      console.log("长连接发生错误！");
-    },
-    websocketclose(e) {
-      console.log("长连接已关闭");
-    }
+    // websocketonerror() {
+    //   console.log("长连接发生错误！");
+    // },
+    // websocketclose(e) {
+    //   console.log("长连接已关闭");
+    // }
   },
-  beforeRouteLeave(to, from, next) {
-    if (this.websocket) {
-      this.websocket.close();
-    }
-    next();
-  },
+  // beforeRouteLeave(to, from, next) {
+  //   if (this.websocket) {
+  //     this.websocket.close();
+  //   }
+  //   next();
+  // },
   created() {
-    this.$globalWs.ws.onmessage = (res) =>{
-      this.websocketonmessage(res)
-    }
+    // this.$globalWs.ws.onmessage = (res) =>{
+    //   this.websocketonmessage(res)
+    // }
+    PubSub.subscribe("changePage",(msg,arr)=> {
+      this.showPoint = false
+      this.changePage(arr.code, false);
+    })
+    PubSub.subscribe("getAcc",(msg,arr)=> {
+      this.laserDom.style.left = '50%'
+      this.laserDom.style.top = '50%'
+      this.laserAnimate({ left: arr.value.left, top: arr.value.top });
+    })
+    PubSub.subscribe("endAcc",(msg,arr)=> {
+      this.showLaser = false;
+    })
+    PubSub.subscribe("movestart",(msg,arr)=> {
+      this.showLaser = true;
+    })
+    PubSub.subscribe("closeSceen",(msg,arr)=> {
+      this.$router.push({ path: "/" });
+    })
+    PubSub.subscribe("boradToScreen",(msg,arr)=> {
+      console.log(arr.context)
+      let drawData = arr.context
+      if(drawData.data.graphtype != 9 && drawData.data.graphtype != 10){
+        console.log(drawData.data)
+        this.draw.dodraw(drawData);
+        if(drawData.data.color){
+          this.penColor = drawData.data.color;
+        }
+        if(drawData.data.weight){
+          this.penWight = drawData.data.weight;
+        }
+      }
+    })
+    PubSub.subscribe("clearPPT",(msg,arr)=> {
+      this.clearPPTScreen()
+    })
+    PubSub.subscribe("pointShow",(msg,arr)=> {
+      this.showPoint = true
+      this.pointText = arr.value ==1?'重点':'难点'
+    })
+    PubSub.subscribe("checkIn",(msg,arr)=> {
+      this.$router.push({ path: '/checkIn',query:{classname:arr.classname,activityLogId:arr.activityLogId}})
+    })
+    PubSub.subscribe("vote",(msg,arr)=> {
+      this.$router.push({ path: '/vote',query:{classname:arr.classname,activityLogId:arr.activityLogId}})
+    })
+  },
+  beforeDestroy(){
+    PubSub.unsubscribe("changePage")
+    PubSub.unsubscribe("getAcc")
+    PubSub.unsubscribe("endAcc")
+    PubSub.unsubscribe("movestart")
+    PubSub.unsubscribe("closeSceen")
+    PubSub.unsubscribe("boradToScreen")
+    PubSub.unsubscribe("clearPPT")
+    PubSub.unsubscribe("pointShow")
+    PubSub.unsubscribe("checkIn")
+    PubSub.unsubscribe("vote")
   },
   mounted() {
     this.windowW = window.innerWidth;
